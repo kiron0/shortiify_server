@@ -1,0 +1,165 @@
+import { Request, Response } from "express";
+import { ObjectId } from "mongodb";
+import jwt from "jsonwebtoken";
+import client from "../utils/dbCollection";
+const usersCollection = client.db("shortiify").collection("users" as string);
+
+export const getUsers = async (req: Request, res: Response) => {
+  const uid = req.query.uid;
+  if (uid) {
+    const users = await usersCollection.find({ uid: uid }).toArray();
+    res.send(users);
+  } else {
+    res.status(403).send({ message: "forbidden access" });
+  }
+};
+
+export const getUserById = async (req: Request, res: Response) => {
+  const uid = req.query.uid;
+  if (uid) {
+    const user = await usersCollection.findOne({ uid: uid });
+    res.send(user);
+  } else {
+    res.status(403).send({ message: "forbidden access" });
+  }
+};
+
+// get only the urls of the user
+export const getUserUrls = async (req: Request, res: Response) => {
+  const uid = req.query.uid;
+  const slug = req.query.slug;
+  if (uid) {
+    const user = await usersCollection.findOne({
+      uid: uid,
+    });
+    const urls = user?.urls;
+    res.send(urls);
+  } else {
+    res.status(403).send({ message: "forbidden access" });
+  }
+};
+
+// delete a url from the user
+export const deleteUrl = async (req: Request, res: Response) => {
+  const uid = req.query.uid;
+  const slug = req.query.slug;
+  if (uid) {
+    const user = await usersCollection.findOne({
+      uid: uid,
+    });
+    const urls = user?.urls;
+    // delete the url from the array
+    const newUrls = urls?.filter((url: any) => url.slug !== slug);
+    const query = { uid: uid };
+    const updateDoc = {
+      $set: { urls: newUrls },
+    };
+    const result = await usersCollection.updateOne(query, updateDoc);
+    if (result.acknowledged) {
+      res.send({ success: true, message: "Delete url successfully" });
+    } else {
+      res.send({ success: false, message: "Delete url failed" });
+    }
+  } else {
+    res.status(403).send({ message: "forbidden access" });
+  }
+};
+
+// get only the urls of the user by id
+export const getUserUrlsById = async (req: Request, res: Response) => {
+  const id = req.query.id;
+  if (id) {
+    const user = await usersCollection.findOne({ _id: new ObjectId(id as any) });
+    res.send(user?.urls);
+  } else {
+    res.status(403).send({ message: "forbidden access" });
+  }
+};
+
+export const getAllUsers = async (req: Request, res: Response) => {
+  const users = await usersCollection.find({}).toArray();
+  res.send(users);
+};
+
+export const updateUser = async (req: Request, res: Response) => {
+  const data = req.body;
+  const uid = req.query.uid as string;
+  const decodedID = req?.body?.user?.uid;
+  const query = { uid: uid };
+  const updateDoc = {
+    $set: data,
+  };
+  if (decodedID === uid) {
+    const result = await usersCollection.updateOne(query, updateDoc);
+    if (result.acknowledged) {
+      res.send({ success: true, message: "Update profile successfully" });
+    }
+  } else {
+    res.status(403).send({ success: false, message: "Forbidden request" });
+  }
+};
+
+export const createUser = async (req: Request, res: Response) => {
+  const user = req.body;
+  const filter = { email: user.email, uid: user.uid };
+  const options = { upsert: true };
+  const updateDoc = {
+    $set: user,
+  };
+  const result = await usersCollection.updateOne(filter, updateDoc, options);
+  const token = jwt.sign(
+    { email: user.email, uid: user.uid },
+    process.env.ACCESS_TOKEN_SECRET as string,
+    { expiresIn: "7d" }
+  );
+  res.send({ result, token });
+};
+
+export const deleteUser = async (req: Request, res: Response) => {
+  const email = req.params.email;
+  const result = await usersCollection.deleteOne({ email: email });
+  res.send(result);
+};
+
+export const findAdmin = async (req: Request, res: Response) => {
+  const email = req.params.email;
+  const user = await usersCollection.findOne({ email: email });
+  const isAdmin = user?.role === "admin";
+  res.send({ admin: isAdmin });
+};
+
+export const makeAdmin = async (req: Request, res: Response) => {
+  const email = req.body.email;
+  const filter = { email: email };
+  const updateDoc = {
+    $set: { role: "admin" },
+  };
+  const result = await usersCollection.updateOne(filter, updateDoc);
+  res.send(result);
+};
+
+export const removeAdmin = async (req: Request, res: Response) => {
+  const email = req.body.email;
+  const filter = { email: email };
+  const updateDoc = {
+    $set: { role: "" },
+  };
+  const result = await usersCollection.updateOne(filter, updateDoc);
+  res.send(result);
+};
+
+// post urls to users
+export const postUrls = async (req: Request, res: Response) => {
+  const uid = req.query.uid;
+  const urls = req.body.urls;
+  const filter = { uid: uid };
+  const updateDoc = {
+    $push: { urls: urls },
+  };
+  const result = await usersCollection.updateOne(filter, updateDoc);
+  res.send({
+    success: true,
+    message: "Update urls successfully",
+    result,
+  });
+};
