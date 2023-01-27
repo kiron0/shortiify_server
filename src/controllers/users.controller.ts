@@ -28,17 +28,19 @@ export const getUserById = async (req: Request, res: Response) => {
 export const getUserUrlsBySlug = async (req: Request, res: Response) => {
   const slug = req.query?.slug?.toString() as string;
   const users = await usersCollection.find({}).toArray();
-  const urls = users?.map((user: any) => {
-    return user?.urls?.filter((url: any) => url.slug === slug);
+  const urls = users.map((user: any) => {
+    return user.urls?.filter((url: any) => url?.slug === slug);
   });
   if (urls?.length > 0) {
     // now convert the array of arrays to a single array
-    const newUrls = urls?.flat();
+    const newUrls = urls.flat();
     // now remove the empty arrays
-    const finalUrls = newUrls?.filter((url: any) => url.slug === slug);
+    const finalUrls = newUrls.filter((url: any) => url?.slug === slug);
     if (finalUrls.length > 0) {
       // now convert the array of objects to a single object
-      res.send(finalUrls);
+      const finalUrl = finalUrls[0];
+      // console.log(finalUrl);
+      res.send(finalUrl);
     } else {
       res.status(404).send({ status: 404, message: "No url found" });
     }
@@ -63,16 +65,17 @@ export const getUserUrlsWithoutUid = async (req: Request, res: Response) => {
   const userURL = req.query.url?.toString() as string;
   const users = await usersCollection.find({}).toArray();
   const urls = users?.map((user: any) => {
-    return user?.urls?.filter((url: any) => url.url === userURL);
+    return user.urls?.filter((url: any) => url?.url === userURL);
   });
   if (urls?.length > 0) {
     // now convert the array of arrays to a single array
     const newUrls = urls?.flat();
     // now remove the empty arrays
-    const finalUrls = newUrls?.filter((url: any) => url.url === userURL);
+    const finalUrls = newUrls?.filter((url: any) => url?.url === userURL);
     if (finalUrls.length > 0) {
       // now convert the array of objects to a single object
       const finalUrl = finalUrls[0];
+      // console.log(finalUrl);
       res.send(finalUrl);
     } else {
       res.status(404).send({ status: 404, message: "No url found" });
