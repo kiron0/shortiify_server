@@ -24,18 +24,61 @@ export const getUserById = async (req: Request, res: Response) => {
   }
 };
 
+// get only the urls of the user by slug without uid
+export const getUserUrlsBySlug = async (req: Request, res: Response) => {
+  const slug = req.query?.slug?.toString() as string;
+  const users = await usersCollection.find({}).toArray();
+  const urls = users?.map((user: any) => {
+    return user?.urls?.filter((url: any) => url.slug === slug);
+  });
+  if (urls?.length > 0) {
+    // now convert the array of arrays to a single array
+    const newUrls = urls?.flat();
+    // now remove the empty arrays
+    const finalUrls = newUrls?.filter((url: any) => url.slug === slug);
+    if (finalUrls.length > 0) {
+      // now convert the array of objects to a single object
+      res.send(finalUrls);
+    } else {
+      res.status(404).send({ status: 404, message: "No url found" });
+    }
+  } else {
+    res.status(404).send({ message: "No url found" });
+  }
+};
+
 // get only the urls of the user
-export const getUserUrls = async (req: Request, res: Response) => {
-  const uid = req.query.uid;
-  const slug = req.query.slug;
+export const getUserUrlsParams = async (req: Request, res: Response) => {
+  const uid = req.params.uid;
   if (uid) {
-    const user = await usersCollection.findOne({
-      uid: uid,
-    });
-    const urls = user?.urls;
-    res.send(urls);
+    const user = await usersCollection.findOne({ uid: uid });
+    res.send(user);
   } else {
     res.status(403).send({ message: "forbidden access" });
+  }
+};
+
+
+export const getUserUrlsWithoutUid = async (req: Request, res: Response) => {
+  const userURL = req.query.url?.toString() as string;
+  const users = await usersCollection.find({}).toArray();
+  const urls = users?.map((user: any) => {
+    return user?.urls?.filter((url: any) => url.url === userURL);
+  });
+  if (urls?.length > 0) {
+    // now convert the array of arrays to a single array
+    const newUrls = urls?.flat();
+    // now remove the empty arrays
+    const finalUrls = newUrls?.filter((url: any) => url.url === userURL);
+    if (finalUrls.length > 0) {
+      // now convert the array of objects to a single object
+      const finalUrl = finalUrls[0];
+      res.send(finalUrl);
+    } else {
+      res.status(404).send({ status: 404, message: "No url found" });
+    }
+  } else {
+    res.status(404).send({ message: "No url found" });
   }
 };
 

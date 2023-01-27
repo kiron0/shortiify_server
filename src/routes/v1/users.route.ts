@@ -13,16 +13,20 @@ import {
           makeAdmin,
           removeAdmin,
           postUrls,
-          getUserUrls,
-          deleteUrl
+          deleteUrl,
+          getUserUrlsWithoutUid,
+          getUserUrlsParams,
+          getUserUrlsBySlug,
 } from "../../controllers/users.controller";
 
 // here will be all the routes
-router.get("/users", getUsers);
+router.get("/users", VerifyToken, getUsers);
 router.get("/user", VerifyToken, getUserById);
-router.get("/user/urls", getUserUrls);
+router.get("/users/urls", getUserUrlsBySlug);
+router.get("/user/urls/:uid", getUserUrlsParams);
 router.get("/users/all", VerifyToken, VerifyAdmin, getAllUsers);
-router.get("/admin/:email", findAdmin);
+router.get("/admin/:email", VerifyToken, findAdmin);
+router.get("/user/urls/dup/q", VerifyToken, getUserUrlsWithoutUid);
 router.put("/user", createUser);
 router.patch("/users", VerifyToken, updateUser);
 router.delete("/user/:email", VerifyToken, VerifyAdmin, deleteUser);
