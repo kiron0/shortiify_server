@@ -32,14 +32,17 @@ export const getUserUrlsBySlug = async (req: Request, res: Response) => {
     return user.urls?.filter((url: any) => url?.slug === slug);
   });
   if (urls?.length > 0) {
-    // now convert the array of arrays to a single array
     const newUrls = urls.flat();
-    // now remove the empty arrays
     const finalUrls = newUrls.filter((url: any) => url?.slug === slug);
     if (finalUrls.length > 0) {
-      // now convert the array of objects to a single object
       const finalUrl = finalUrls[0];
-      // console.log(finalUrl);
+      const newViews = (prev: number) => {
+        return prev += 1;
+      }
+      const newUrl = await usersCollection.updateOne(
+        { "urls.slug": slug },
+        { $set: { "urls.$.views": newViews(finalUrl.views) } },
+      );
       res.send(finalUrl);
     } else {
       res.status(404).send({ status: 404, message: "No url found" });
