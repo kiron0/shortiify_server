@@ -26,7 +26,7 @@ router.get("/users/urls", getUserUrlsBySlug);
 router.get("/user/urls/:uid", getUserUrlsParams);
 router.get("/users/all", VerifyToken, VerifyAdmin, getAllUsers);
 router.get("/admin/:email", VerifyToken, findAdmin);
-router.get("/user/urls/dup/q", VerifyToken, getUserUrlsWithoutUid);
+router.post("/user/urls/dup/q", getUserUrlsWithoutUid);
 router.put("/user", createUser);
 router.patch("/users", VerifyToken, updateUser);
 router.delete("/user/:email", VerifyToken, VerifyAdmin, deleteUser);

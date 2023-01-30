@@ -62,7 +62,7 @@ export const getUserUrlsParams = async (req: Request, res: Response) => {
 
 
 export const getUserUrlsWithoutUid = async (req: Request, res: Response) => {
-  const userURL = req.query.url?.toString() as string;
+  const userURL = req.body.url;
   const users = await usersCollection.find({}).toArray();
   const urls = users?.map((user: any) => {
     return user.urls?.filter((url: any) => url?.url === userURL);
