@@ -88,6 +88,38 @@ export const getUserUrlsWithoutUid = async (req: Request, res: Response) => {
   }
 };
 
+// update the slug of the url of the user
+export const getSlug = async (req: Request, res: Response) => {
+  const slug = req.query?.slug as string;
+  const userUrls = await usersCollection.find({}).toArray();
+  const urls = userUrls.map((user: any) => {
+    return user.urls?.filter((url: any) => url?.slug === slug);
+  });
+  const newUrls = urls?.flat();
+  if (newUrls.length > 0) {
+    res.send({ status: 200, message: "Slug already exists" });
+  } else {
+    res.send({ status: 200, message: "Slug is available" });
+  }
+};
+
+// update the slug of the url of the user
+export const updateSlug = async (req: Request, res: Response) => {
+  const id = req.query.id;
+  const newSlug = req.body.slug;
+  // patch the slug of the url
+  const query = { "urls._id": id };
+  const updateDoc = {
+    $set: { "urls.$.slug": newSlug },
+  };
+  const result = await usersCollection.updateOne(query, updateDoc);
+  if (result.acknowledged) {
+    res.send({ success: true, message: "Slug updated successfully" });
+  } else {
+    res.send({ success: false, message: "Slug not updated" });
+  }
+};
+
 // delete a url from the user
 export const deleteUrl = async (req: Request, res: Response) => {
   const uid = req.query.uid;
