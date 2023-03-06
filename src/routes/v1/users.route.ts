@@ -23,7 +23,7 @@ import {
 
 // here will be all the routes
 router.get("/users", VerifyToken, getUsers);
-router.get("/user", VerifyToken, getUserById);
+router.get("/user", getUserById);
 router.get("/users/urls", getUserUrlsBySlug);
 router.get("/user/urls/:uid", getUserUrlsParams);
 router.get("/user/getSlug", VerifyToken, getSlug);

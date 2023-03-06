@@ -223,7 +223,7 @@ export const removeAdmin = async (req: Request, res: Response) => {
   const email = req.body.email;
   const filter = { email: email };
   const updateDoc = {
-    $set: { role: "" },
+    $unset: { role: "" },
   };
   const result = await usersCollection.updateOne(filter, updateDoc);
   res.send(result);
