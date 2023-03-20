@@ -18,7 +18,6 @@ import {
           getUserUrlsParams,
           getUserUrlsBySlug,
           getSlug,
-          updateSlug,
 } from "../../controllers/users.controller";
 
 // here will be all the routes
@@ -26,12 +25,11 @@ router.get("/users", VerifyToken, getUsers);
 router.get("/user", getUserById);
 router.get("/users/urls", getUserUrlsBySlug);
 router.get("/user/urls/:uid", getUserUrlsParams);
-router.get("/user/getSlug", VerifyToken, getSlug);
 router.get("/users/all", VerifyToken, VerifyAdmin, getAllUsers);
 router.get("/admin/:email", VerifyToken, findAdmin);
 router.post("/user/urls/dup/q", getUserUrlsWithoutUid);
 router.put("/user", createUser);
-router.patch("/user/updateSlug", VerifyToken, updateSlug);
+router.patch("/user/getSlug", VerifyToken, getSlug);
 router.patch("/users", VerifyToken, updateUser);
 router.delete("/user/:email", VerifyToken, VerifyAdmin, deleteUser);
 router.delete("/user/url/delete", VerifyToken, deleteUrl);

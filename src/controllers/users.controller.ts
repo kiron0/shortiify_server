@@ -78,7 +78,6 @@ export const getUserUrlsWithoutUid = async (req: Request, res: Response) => {
     if (finalUrls.length > 0) {
       // now convert the array of objects to a single object
       const finalUrl = finalUrls[0];
-      // console.log(finalUrl);
       res.send(finalUrl);
     } else {
       res.status(404).send({ status: 404, message: "No url found" });
@@ -90,33 +89,28 @@ export const getUserUrlsWithoutUid = async (req: Request, res: Response) => {
 
 // update the slug of the url of the user
 export const getSlug = async (req: Request, res: Response) => {
-  const slug = req.query?.slug as string;
+  const slug = req.query.slug as string;
+  const id = req.query.id;
+  const newSlug = req.body.slug;
   const userUrls = await usersCollection.find({}).toArray();
   const urls = userUrls.map((user: any) => {
-    return user.urls?.filter((url: any) => url?.slug === slug);
+    return user.urls?.filter((url: any) => url.slug == slug);
   });
-  const newUrls = urls?.flat();
+  // remove undefined values
+  const newUrls = urls.flat().filter((url: any) => url !== undefined);
   if (newUrls.length > 0) {
     res.send({ status: 200, message: "Slug already exists" });
   } else {
-    res.send({ status: 200, message: "Slug is available" });
-  }
-};
-
-// update the slug of the url of the user
-export const updateSlug = async (req: Request, res: Response) => {
-  const id = req.query.id;
-  const newSlug = req.body.slug;
-  // patch the slug of the url
-  const query = { "urls._id": id };
-  const updateDoc = {
-    $set: { "urls.$.slug": newSlug },
-  };
-  const result = await usersCollection.updateOne(query, updateDoc);
-  if (result.acknowledged) {
-    res.send({ success: true, message: "Slug updated successfully" });
-  } else {
-    res.send({ success: false, message: "Slug not updated" });
+    const query = { "urls._id": id };
+    const updateDoc = {
+      $set: { "urls.$.slug": newSlug },
+    };
+    const result = await usersCollection.updateOne(query, updateDoc);
+    if (result.acknowledged) {
+      res.send({ success: true, message: "Slug updated successfully" });
+    } else {
+      res.send({ success: false, message: "Slug not updated" });
+    }
   }
 };
 
