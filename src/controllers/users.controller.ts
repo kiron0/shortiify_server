@@ -238,3 +238,23 @@ export const postUrls = async (req: Request, res: Response) => {
     result,
   });
 };
+
+export const getUrlSbyEmail = async (req: Request, res: Response) => {
+  const email = req.query.email;
+  if (email) {
+    const myItems = await usersCollection.find({ email: email }).toArray();
+    res.send({ success: true, message: `ToDoS Found for ${email}`, result: myItems });
+  } else {
+    res.status(403).send({ message: "forbidden access" });
+  }
+};
+
+// get only gmail users
+export const getUsersMail = async (req: Request, res: Response) => {
+  const users = await usersCollection.find({ email: { $regex: /@/ } }).toArray();
+  if (users.length > 0) {
+    res.send({ success: true, message: "Get gmail users successfully", result: users });
+  } else {
+    res.send({ success: false, message: "No gmail users found" });
+  }
+};
