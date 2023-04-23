@@ -15,7 +15,6 @@ import {
           postUrls,
           deleteUrl,
           getUserUrlsWithoutUid,
-          getUserUrlsParams,
           getUserUrlsBySlug,
           getSlug,
           getUrlSbyEmail,
@@ -26,7 +25,6 @@ import {
 router.get("/users", VerifyToken, getUsers);
 router.get("/user", getUserById);
 router.get("/users/urls", getUserUrlsBySlug);
-router.get("/user/urls/:uid", getUserUrlsParams);
 router.get("/users/all", VerifyToken, VerifyAdmin, getAllUsers);
 router.get("/users/usersMail", VerifyToken, getUsersMail);
 router.get("/admin/:email", VerifyToken, findAdmin);

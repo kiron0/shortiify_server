@@ -52,17 +52,6 @@ export const getUserUrlsBySlug = async (req: Request, res: Response) => {
   }
 };
 
-// get only the urls of the user
-export const getUserUrlsParams = async (req: Request, res: Response) => {
-  const uid = req.params.uid;
-  if (uid) {
-    const user = await usersCollection.findOne({ uid: uid });
-    res.send(user);
-  } else {
-    res.status(403).send({ message: "forbidden access" });
-  }
-};
-
 
 export const getUserUrlsWithoutUid = async (req: Request, res: Response) => {
   const userURL = req.body.url;
