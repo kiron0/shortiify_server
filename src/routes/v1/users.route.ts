@@ -6,6 +6,7 @@ import { VerifyToken } from "../../middlewares/VerifyToken";
 import {
           getUsers,
           getUserById,
+          getUserUrlsByUid,
           getAllUsers,
           updateUser,
           createUser,
@@ -23,7 +24,8 @@ import {
 
 // here will be all the routes
 router.get("/users", VerifyToken, getUsers);
-router.get("/user", getUserById);
+router.get("/user", VerifyToken, getUserById);
+router.get("/user/urls", VerifyToken, getUserUrlsByUid);
 router.get("/users/urls", getUserUrlsBySlug);
 router.get("/users/all", VerifyToken, VerifyAdminDev, getAllUsers);
 router.get("/users/usersMail", VerifyToken, getUsersMail);

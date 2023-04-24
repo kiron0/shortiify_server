@@ -24,6 +24,24 @@ export const getUserById = async (req: Request, res: Response) => {
   }
 };
 
+export const getUserUrlsByUid = async (req: Request, res: Response) => {
+  let { uid, page, limit } = req.query as any;
+  page = parseInt(page);
+  limit = parseInt(limit);
+  if (!page) page = 1;
+  if (!limit) limit = 10;
+  const skip = (page - 1) * limit;
+  const sort = { createdAt: -1 };
+  if (uid && page && limit) {
+    const user = await usersCollection.findOne({ uid: uid });
+    const urls = user?.urls?.reverse()?.slice(skip, skip + limit);
+    const pageCount = Math.ceil(user?.urls?.length / limit);
+    res.send({ urls: urls, totalPages: pageCount });
+  } else {
+    res.status(403).send({ message: "forbidden access" });
+  }
+};
+
 // get only the urls of the user by slug without uid
 export const getUserUrlsBySlug = async (req: Request, res: Response) => {
   const slug = req.query?.slug?.toString() as string;
@@ -141,8 +159,15 @@ export const getUserUrlsById = async (req: Request, res: Response) => {
 };
 
 export const getAllUsers = async (req: Request, res: Response) => {
-  const users = await usersCollection.find({}).toArray();
-  res.send(users);
+  let { page, limit } = req.query as any;
+  page = parseInt(page);
+  limit = parseInt(limit);
+  if (!page) page = 1;
+  if (!limit) limit = 10;
+  const skip = (page - 1) * limit;
+  const pages = Math.ceil((await usersCollection.countDocuments()) / limit);
+  const users = await usersCollection.find({}).skip(skip).limit(limit).toArray();
+  res.send({ users: users, totalPages: pages });
 };
 
 export const updateUser = async (req: Request, res: Response) => {
