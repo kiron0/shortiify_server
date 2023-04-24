@@ -180,36 +180,44 @@ export const createUser = async (req: Request, res: Response) => {
 };
 
 export const deleteUser = async (req: Request, res: Response) => {
-  const email = req.params.email;
+  const email = req.query.email;
   const result = await usersCollection.deleteOne({ email: email });
   res.send(result);
 };
 
 export const findAdmin = async (req: Request, res: Response) => {
-  const email = req.params.email;
-  const user = await usersCollection.findOne({ email: email });
-  const isAdmin = user?.role === "admin";
-  res.send({ admin: isAdmin });
+  const email = req.query.email;
+  if (email) {
+    const user = await usersCollection.findOne({ email: email });
+    const role = user?.role;
+    if (role) {
+      res.send({ success: true, userRole: role });
+    } else {
+      res.send({ success: false, userRole: role });
+    }
+  } else {
+    res.status(403).send({ message: "forbidden access" });
+  }
 };
 
-export const makeAdmin = async (req: Request, res: Response) => {
+export const roleChange = async (req: Request, res: Response) => {
   const email = req.body.email;
-  const filter = { email: email };
-  const updateDoc = {
-    $set: { role: "admin" },
-  };
-  const result = await usersCollection.updateOne(filter, updateDoc);
-  res.send(result);
-};
-
-export const removeAdmin = async (req: Request, res: Response) => {
-  const email = req.body.email;
-  const filter = { email: email };
-  const updateDoc = {
-    $unset: { role: "" },
-  };
-  const result = await usersCollection.updateOne(filter, updateDoc);
-  res.send(result);
+  const role = req.body.userRole;
+  if (role === "user") {
+    const filter = { email: email };
+    const updateDoc = {
+      $unset: { role: "" },
+    };
+    const result = await usersCollection.updateOne(filter, updateDoc);
+    res.send({ success: true, message: "Role changed successfully", result });
+  } else {
+    const filter = { email: email };
+    const updateDoc = {
+      $set: { role: role },
+    };
+    const result = await usersCollection.updateOne(filter, updateDoc);
+    res.send({ success: true, message: "Role changed successfully", result });
+  }
 };
 
 // post urls to users

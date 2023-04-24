@@ -1,6 +1,7 @@
 import { Router } from "express";
 const router: Router = Router();
-import { VerifyAdmin } from "../../middlewares/VerifyAdmin";
+import { VerifyAdminDev } from "../../middlewares/VerifyAdminDev";
+import { VerifyDev } from "../../middlewares/VerifyDev";
 import { VerifyToken } from "../../middlewares/VerifyToken";
 import {
           getUsers,
@@ -10,8 +11,7 @@ import {
           createUser,
           deleteUser,
           findAdmin,
-          makeAdmin,
-          removeAdmin,
+          roleChange,
           postUrls,
           deleteUrl,
           getUserUrlsWithoutUid,
@@ -25,18 +25,17 @@ import {
 router.get("/users", VerifyToken, getUsers);
 router.get("/user", getUserById);
 router.get("/users/urls", getUserUrlsBySlug);
-router.get("/users/all", VerifyToken, VerifyAdmin, getAllUsers);
+router.get("/users/all", VerifyToken, VerifyAdminDev, getAllUsers);
 router.get("/users/usersMail", VerifyToken, getUsersMail);
-router.get("/admin/:email", VerifyToken, findAdmin);
-router.get("/users/allUrls/email", VerifyToken, VerifyAdmin, getUrlSbyEmail);
+router.get("/users/role/find", VerifyToken, findAdmin);
+router.get("/users/allUrls/email", VerifyToken, VerifyAdminDev, getUrlSbyEmail);
 router.post("/user/urls/dup/q", getUserUrlsWithoutUid);
 router.put("/user", createUser);
 router.patch("/user/getSlug", VerifyToken, getSlug);
 router.patch("/users", VerifyToken, updateUser);
-router.delete("/user/:email", VerifyToken, VerifyAdmin, deleteUser);
+router.delete("/user/deleteUser", VerifyToken, VerifyDev, deleteUser);
 router.delete("/user/url/delete", VerifyToken, deleteUrl);
-router.put("/user/admin", VerifyToken, VerifyAdmin, makeAdmin);
-router.put("/user/removeAdmin", VerifyToken, VerifyAdmin, removeAdmin);
+router.put("/user/roleChange", VerifyToken, VerifyDev, roleChange);
 router.post("/user/urls", VerifyToken, postUrls);
 
 export default router;

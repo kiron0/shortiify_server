@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import client from "../utils/dbCollection";
-export const usersCollection = client.db("shortiify").collection("users");
+export const usersCollection = client.db("NID").collection("users");
 
 export const VerifyAdmin = async (req: Request, res: Response, next: NextFunction) => {
   const requester = req?.body?.user?.email;

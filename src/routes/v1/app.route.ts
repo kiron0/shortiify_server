@@ -1,6 +1,6 @@
 import { Router } from "express";
 const router: Router = Router();
-import { VerifyAdmin } from "../../middlewares/VerifyAdmin";
+import { VerifyDev } from "../../middlewares/VerifyDev";
 import { VerifyToken } from "../../middlewares/VerifyToken";
 
 import {
@@ -11,6 +11,6 @@ import {
 
 router.get("/app/appName", getAppName);
 router.get("/app/addVisitor", addVisitor);
-router.patch("/app/changeAppName", VerifyToken, VerifyAdmin, updateAppName);
+router.patch("/app/changeAppName", VerifyToken, VerifyDev, updateAppName);
 
 export default router;

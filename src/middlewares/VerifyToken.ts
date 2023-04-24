@@ -9,6 +9,9 @@ type MyToken = {
 const VerifyToken = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const token = req.headers?.authorization?.split(" ")[1];
+    // console.log(`token: ${token}`);
+    // console.log(`JWT_SECRET: ${JWT_SECRET}`);
+
     if (!token) {
       return res.status(401).send({
         message: "Access Denied",
@@ -16,8 +19,10 @@ const VerifyToken = async (req: Request, res: Response, next: NextFunction) => {
       });
     }
     // verify token
+    // const decoded = jwt_decode(token);
     const decoded = jwt.verify(token, JWT_SECRET) as MyToken;
     req.body.user = decoded;
+    // console.log(`decoded :`, decoded);
 
     next();
   } catch (error) {
