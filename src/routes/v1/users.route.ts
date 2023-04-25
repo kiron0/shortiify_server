@@ -18,6 +18,7 @@ import {
           getUserUrlsWithoutUid,
           getUserUrlsBySlug,
           getSlug,
+          getUrl,
           getUrlSbyEmail,
           getUsersMail,
 } from "../../controllers/users.controller";
@@ -34,6 +35,7 @@ router.get("/users/allUrls/email", VerifyToken, VerifyAdminDev, getUrlSbyEmail);
 router.post("/user/urls/dup/q", getUserUrlsWithoutUid);
 router.put("/user", createUser);
 router.patch("/user/getSlug", VerifyToken, getSlug);
+router.patch("/user/getUrl", VerifyToken, getUrl);
 router.patch("/users", VerifyToken, updateUser);
 router.delete("/user/deleteUser", VerifyToken, VerifyDev, deleteUser);
 router.delete("/user/url/delete", VerifyToken, deleteUrl);

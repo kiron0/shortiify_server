@@ -121,6 +121,26 @@ export const getSlug = async (req: Request, res: Response) => {
   }
 };
 
+export const getUrl = async (req: Request, res: Response) => {
+  const queryUrl = req.query.url as string;
+  const id = req.query.id;
+  const newUrl = req.body.url;
+  const userUrls = await usersCollection.find({}).toArray();
+  const urls = userUrls.map((user: any) => {
+    return user.urls?.filter((url: any) => url.url == queryUrl);
+  });
+  const query = { "urls._id": id };
+  const updateDoc = {
+    $set: { "urls.$.url": newUrl },
+  };
+  const result = await usersCollection.updateOne(query, updateDoc);
+  if (result.acknowledged) {
+    res.send({ success: true, message: "Url updated successfully" });
+  } else {
+    res.send({ success: false, message: "Url not updated" });
+  }
+};
+
 // delete a url from the user
 export const deleteUrl = async (req: Request, res: Response) => {
   const uid = req.query.uid;
