@@ -12,6 +12,7 @@ app.use(express.json());
 /* here will be all the imports routes */
 import { default as userRouter } from "./routes/v1/users.route";
 import { default as appRouter } from "./routes/v1/app.route";
+import { default as notesRouter } from "./routes/v1/notes.route";
 
 /* here will be the all the routes */
 app.get("/", (req: Request, res: Response) => {
@@ -21,6 +22,7 @@ app.get("/", (req: Request, res: Response) => {
 /* Here is the User Routes */
 app.use("/api/v1", userRouter);
 app.use("/api/v1/", appRouter);
+app.use("/api/v1/", notesRouter);
 
 // 404 response
 app.all("*", (req: Request, res: Response) => {
